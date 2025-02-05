@@ -13,8 +13,8 @@ function uuidToBuffer(uuid) {
 async function createUserInMariaDB(user) {
     try {
         const query = `
-            INSERT INTO user (id, email, lastname, name, password, phone, role)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO user (id, email, lastname, name, password, phone, role, active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const values = [
             uuidToBuffer(user.id), 
@@ -24,6 +24,7 @@ async function createUserInMariaDB(user) {
             user.password,
             user.phone,
             user.role,
+            user.active
         ];
         await mariadbConnection.query(query, values);
         console.log("User created on MariaDB.");
@@ -63,7 +64,7 @@ async function updateUserInMariaDB(user) {
 //Delete USER on MySQL
 async function deleteUserFromMySQL(user) {
     try {
-        const query = `DELETE FROM user WHERE id = ?`;
+        const query = `UPDATE user SET active = false WHERE id = ?`;
         await mysqlConnection.query(query, [uuidToBuffer(user)]);
         console.log("User delete on MySQL.");
     } catch (error) {
