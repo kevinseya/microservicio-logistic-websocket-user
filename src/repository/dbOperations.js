@@ -91,11 +91,11 @@ const dbOperations = {
         }
     },
 
-    async deleteUserFromMySQL(userId) {
+    async deleteUserFromMySQL(user) {
         try {
             const [result] = await mysqlPool.execute(
                 'UPDATE user SET active = false WHERE id = ?',
-                [uuidToBuffer(userId)]
+                [uuidToBuffer(user.id)]
             );
             console.log('User deleted in MySQL');
             return result.affectedRows > 0;

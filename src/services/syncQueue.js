@@ -37,7 +37,7 @@ async function processPendingEvents() {
                         await dbOperations.updateUserInMariaDB(event.user);
                         break;
                     case "DELETE":
-                        await dbOperations.deleteUserFromMySQL(event.userId);
+                        await dbOperations.deleteUserFromMySQL(event.user);
                         break;
                 }
                 
