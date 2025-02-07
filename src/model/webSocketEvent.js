@@ -33,7 +33,7 @@ class WebSocketEvent {
 
             return new WebSocketEvent(parsed.type, parsed.topic, parsed.payload);
         } catch (error) {
-            console.error("❌ Error parsing WebSocket event:", error.message);
+            console.error(" Error parsing WebSocket event:", error.message);
             return null;
         }
     }
