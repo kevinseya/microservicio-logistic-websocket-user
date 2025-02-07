@@ -1,51 +1,23 @@
 const { Server } = require("ws");
-const { saveEvent } = require("../services/eventHandler"); 
-//Clients
-const clients = new Set();
+const WebSocketService = require("../services/webSocketService");
+const eventBus = require("../services/eventBus");
 
 function setupWebSocket(server) {
     const wss = new Server({ server, path: "/ws" });
 
-    wss.on("connection", (ws) => {
-        console.log("✅ Cliente WebSocket conectado");
-        clients.add(ws);
+    wss.on("connection", (ws) => WebSocketService.addClient(ws));
 
-        ws.on("message", async (message) => {
-            const msg = message.toString().trim();
-            console.log("📩 Mensaje recibido:", msg);
-            try {
-                const event = JSON.parse(msg);
-                if (event.operation && event.user) {
-                    await saveEvent(event);
-                    console.log(`Event ${event.operation} save on CouchDB with state "PEDING".`);
-                } else {
-                    console.warn(" Message JSON invalid. Is required 'operation' y 'user'.");
-                }
-            } catch (error) {
-                console.error("❌ Error to parse message JSON:", error.message);
-            }
-        });
+    eventBus.on("processingEvent", (event) => {
+        WebSocketService.broadcastToClients("PROCESSING", `user.${event.operation.toLowerCase()}`, event);
+    });
 
-        ws.on("close", () => {
-            console.log("⚠️ Client WebSocket disconnected");
-            clients.delete(ws);
-        });
+    eventBus.on("eventProcessed", (event) => {
+        WebSocketService.broadcastToClients("COMPLETED", `user.${event.operation.toLowerCase()}`, event);
+    });
 
-        ws.on("error", (error) => {
-            console.error("Error on WebSocket:", error.message);
-        });
+    eventBus.on("eventError", (data) => {
+        WebSocketService.broadcastToClients("ERROR", "user.error", data);
     });
 }
 
-
-function sendMessageToClients(operation, event) {
-    const message = JSON.stringify({ operation, event });
-    clients.forEach((ws) => {
-        if (ws.readyState === ws.OPEN) {
-            ws.send(message);
-        }
-    });
-    console.log(` Message sent to ${clients.size} client(s): ${message}`);
-}
-
-module.exports = { setupWebSocket, sendMessageToClients };
+module.exports = { setupWebSocket };

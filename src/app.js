@@ -1,12 +1,13 @@
-// src/app.js
 require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
-
-const { setupDatabase } = require("./config/couchdb");
-const { processPendingEvents } = require("./services/syncQueue");
+const { testConnection: testCouchDB, setupDatabase } = require("./config/couchdb");
 const { setupWebSocket } = require("./config/websocket");
+const { testConnection: testMariaDB } = require("./config/mariadbConfig");
+const { testConnection: testMySQL } = require("./config/mysqlConfig");
+const eventBus = require('./services/eventBus');
+const { processPendingEvents } = require("./services/syncQueue");
 
 const app = express();
 const server = http.createServer(app);
@@ -14,28 +15,37 @@ const server = http.createServer(app);
 app.use(cors());
 app.use(express.json());
 
-// Inicializar el WebSocket en el servidor HTTP
 setupWebSocket(server);
+
+eventBus.on('eventSaved', async () => {
+    await processPendingEvents();
+});
 
 async function startServer() {
     try {
-        console.log("🔄 Initializing Websocket Service User...");
+        console.log("Initializing WebSocket Service User...");
+        
         await setupDatabase();
-        console.log("Database CouchDb verified.");
 
-        // Starting service process events
+        const mariadbConnected = await testMariaDB();
+        const mysqlConnected = await testMySQL();
+        const couchdbConnected = await testCouchDB();
+
+        if (!mariadbConnected || !mysqlConnected || !couchdbConnected) {
+            throw new Error('Failed to connect to one or more databases');
+        }
+
         await processPendingEvents();
-        console.log("Events pendings processed.");
+        console.log("Pending events processed.");
 
-        // Process periodic pendings events (10 seconds)
         setInterval(async () => {
             await processPendingEvents();
         }, 10000);
 
         const PORT = process.env.PORT || 5001;
-        server.listen(PORT, () => console.log(`WebSocket Service User run on port ${PORT}`));
+        server.listen(PORT, () => console.log(`WebSocket Service User running on port ${PORT}`));
     } catch (error) {
-        console.error("Error starting WebSocket Service User :", error.message);
+        console.error("Error starting WebSocket Service User:", error);
         process.exit(1);
     }
 }
