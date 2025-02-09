@@ -117,7 +117,7 @@ For more details, check the `.github/workflows/ci-cd.yml` file.
 - `400 Bad Request`: Invalid data in the request.
 - `500 Internal Server Error`: Error on the server.
 
-.
+
 
 
 
