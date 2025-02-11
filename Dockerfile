@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Exponemos el puerto en el que la aplicación va a correr
-EXPOSE 5001
+EXPOSE 3001
 
 # Definimos el comando para ejecutar la aplicación dentro de la carpeta src
 CMD ["node", "src/app.js"]
