@@ -52,7 +52,7 @@ jobs:
             sudo docker rm logistic_websocket_user || true
 
             # Generate .env file
-
+            echo "COUCHDB_URL='${{ secrets.COUCHDB_URL }}'" > .env
             echo "COUCHDB_DATABASE=${{ secrets.COUCHDB_DATABASE }}" > .env
             echo "PORT=${{ secrets.PORT }}" >> .env
             echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
@@ -64,11 +64,6 @@ jobs:
             echo "MARIADB_PASSWORD=${{ secrets.MARIADB_PASSWORD }}" >> .env
             echo "MARIADB_PORT=${{ secrets.MARIADB_PORT }}" >> .env
             echo "MARIADB_DATABASE=${{ secrets.MARIADB_DATABASE }}" >> .env
-            echo "COUCHDB_URL='${{ secrets.COUCHDB_URL }}'" > .env
-
-            echo "contenido*****************"
-            echo "CouchDB host extraído: $(echo ${{ secrets.COUCHDB_URL }} | awk -F[/:] '{print $4}')"
-            cat .env 
 
             # Run new container
             sudo docker run -d --name logistic_websocket_user \
