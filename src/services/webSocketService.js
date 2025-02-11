@@ -1,4 +1,4 @@
-const WebSocketEvent = require("../model/WebSocketEvent");
+const WebSocketEvent = require("../model/webSocketEvent");
 const { saveEvent } = require("./eventHandler");
 const eventBus = require("./eventBus");
 
