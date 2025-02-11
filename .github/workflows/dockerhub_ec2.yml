@@ -44,14 +44,14 @@ jobs:
               sudo systemctl enable docker
             fi
 
-            # Bajar la imagen
+            # Download the image
             sudo docker pull kevinseya/logistic_websocket_user:latest
 
-            # Detener y eliminar contenedor anterior
+            # Stop and remove previous container
             sudo docker stop logistic_websocket_user || true
             sudo docker rm logistic_websocket_user || true
 
-            # Generar archivo .env
+            # Generate .env file
             echo "COUCHDB_URL=${{ secrets.COUCHDB_URL }}" > .env
             echo "PORT=${{ secrets.PORT }}" >> .env
             echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
@@ -64,7 +64,7 @@ jobs:
             echo "MARIADB_PORT=${{ secrets.MARIADB_PORT }}" >> .env
             echo "MARIADB_DATABASE=${{ secrets.MARIADB_DATABASE }}" >> .env
 
-            # Ejecutar nuevo contenedor
+            # Run new container
             sudo docker run -d --name logistic_websocket_user \
               --env-file .env \
               -p 3001:3001 \
