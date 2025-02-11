@@ -64,6 +64,8 @@ jobs:
             echo "MARIADB_PASSWORD=${{ secrets.MARIADB_PASSWORD }}" >> .env
             echo "MARIADB_PORT=${{ secrets.MARIADB_PORT }}" >> .env
             echo "MARIADB_DATABASE=${{ secrets.MARIADB_DATABASE }}" >> .env
+            echo "contenido"
+            cat .env 
 
             # Run new container
             sudo docker run -d --name logistic_websocket_user \
