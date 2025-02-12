@@ -53,7 +53,6 @@ jobs:
 
             # Generate .env file
             echo "COUCHDB_URL=${{ secrets.COUCHDB_URL }}" > .env
-            echo "COUCHDB_DATABASE=${{ secrets.COUCHDB_DATABASE }}" >> .env
             echo "PORT=${{ secrets.PORT }}" >> .env
             echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
             echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
